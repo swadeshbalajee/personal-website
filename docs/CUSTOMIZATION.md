@@ -29,9 +29,10 @@ export const siteConfig: SiteConfig = {
 
 ## About page content
 
-`src/pages/about.astro` has its own local placeholder arrays for `experience`, `education`, and
-`interests` near the top of the frontmatter script — edit those directly. They're deliberately not
-in `site.ts` because they're prose-heavy rather than simple config values.
+`src/pages/about.astro` has its own local arrays (`bioParagraphs`, `experience`, `education`,
+`interests`, `certifications`, `honors`) near the top of the frontmatter script — edit those
+directly. They're deliberately not in `site.ts` because they're prose-heavy rather than simple
+config values.
 
 ## Accent color and other design tokens
 

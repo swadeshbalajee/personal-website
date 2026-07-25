@@ -84,11 +84,12 @@ export const siteConfig: SiteConfig = {
   name: 'Swadesh B',
   title: 'RL Researcher',
   shortBio:
-    'MS student in the DSAI department, researching reinforcement learning and large language models under Prof. Ravi.',
+    'Incoming M.S. by Research student in Data Science and AI at IIT Madras, researching reinforcement learning, LLMs, and agentic systems.',
   longIntro:
-    "I'm an MS student in the DSAI department, working under Prof. Ravi on reinforcement learning " +
-    'and large language models. This site collects project write-ups and technical notes on RL, ' +
-    'LLMs, and machine learning more broadly.',
+    "I'm an incoming M.S. by Research student in the Department of Data Science and Artificial " +
+    'Intelligence at IIT Madras, and currently a Post-Baccalaureate Fellow at the Centre for ' +
+    'Responsible AI (CeRAI). My research sits at the intersection of reinforcement learning, ' +
+    'large language models, and agentic systems.',
   email: 'swadeshbalajee13@gmail.com',
 
   nav: [
@@ -103,7 +104,7 @@ export const siteConfig: SiteConfig = {
 
   social: [
     { label: 'GitHub', href: 'https://github.com/swadeshbalajee', icon: 'github' },
-    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/swadesb', icon: 'linkedin' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/swadesh13', icon: 'linkedin' },
     { label: 'Email', href: 'mailto:swadeshbalajee13@gmail.com', icon: 'mail' },
     { label: 'RSS', href: '/rss.xml', icon: 'rss' },
   ],
@@ -123,14 +124,16 @@ export const siteConfig: SiteConfig = {
         'Large Language Models',
         'Machine Learning',
         'Deep Learning',
+        'MLOps',
+        'Responsible AI',
       ],
     },
   ],
 
   currentlyExploring: [
-    'Reinforcement learning algorithms and theory',
-    'RL fine-tuning and alignment for large language models',
-    'Agentic AI systems built on RL-trained policies',
+    'LLM reasoning and context/memory management for long-horizon tasks',
+    'Reinforcement learning for tool-using agents and policy optimization',
+    'Knowledge distillation and inverse optimization',
   ],
 
   // Always shown on /blog and /tags (even with zero posts yet) so the site's

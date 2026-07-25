@@ -3,30 +3,82 @@ import Container from '../components/common/Container.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteConfig } from '../config/site';
 
-// Placeholder structure only — replace with real history before publishing.
-// Nothing here should be treated as an actual claim about the site owner.
+const location = 'Chennai, Tamil Nadu, India';
+
+const bioParagraphs = [
+  "I'm an incoming M.S. by Research student in the Department of Data Science and Artificial " +
+    'Intelligence at IIT Madras (starting July 2026), and currently a Post-Baccalaureate Fellow ' +
+    'at the Centre for Responsible AI (CeRAI), working on problems at the intersection of ' +
+    'machine learning, language models, reinforcement learning, and agentic systems.',
+  'My research interests center on building more capable and efficient AI systems — ' +
+    'particularly LLM reasoning, context and memory management for long-horizon tasks, ' +
+    'reinforcement learning for tool-using agents, policy optimization, knowledge distillation, ' +
+    'and inverse optimization. I like learning algorithms that are structured, sample-efficient, ' +
+    'and useful in realistic settings where models must plan, retrieve, reason, and adapt over ' +
+    'multiple steps.',
+  'Before moving deeper into research, I worked as a Software Engineer at Samsung, building data ' +
+    'engineering systems with Python, Apache Spark, Airflow, BigQuery, and Google Cloud Platform. ' +
+    'That experience shaped how I approach research: I care not only about whether an idea is ' +
+    'mathematically interesting, but whether it can be implemented, scaled, evaluated, and turned ' +
+    'into something useful.',
+];
+
 const experience = [
   {
-    role: 'Graduate Researcher',
-    organization: 'DSAI Department, advised by Prof. Ravi',
-    period: 'Start — End',
-    summary: 'Researching reinforcement learning and large language models.',
+    role: 'Post-Baccalaureate Fellow',
+    organization: 'Centre for Responsible AI (CeRAI)',
+    period: 'September 2025 – Present',
+    summary:
+      'Working on problems at the intersection of machine learning, language models, reinforcement learning, and agentic systems.',
+  },
+  {
+    role: 'Software Engineer',
+    organization: 'Samsung Electronics',
+    period: 'December 2022 – September 2025',
+    summary:
+      'Built data engineering systems using Python, Apache Spark, Airflow, BigQuery, and Google Cloud Platform.',
+  },
+  {
+    role: 'Associate Software Engineer (previously College Intern)',
+    organization: 'Caterpillar Inc.',
+    period: 'January 2022 – December 2022',
+    summary:
+      'Started as a college intern and converted to a full-time associate software engineer role.',
   },
 ];
 
 const education = [
   {
-    credential: 'MS in Data Science and Artificial Intelligence (DSAI)',
-    institution: 'Institution name — replace with the real one',
-    period: 'Start — End',
+    credential: 'M.S. by Research, Data Science and Artificial Intelligence',
+    institution: 'Indian Institute of Technology, Madras',
+    period: 'Starting July 2026',
+  },
+  {
+    credential: 'B.Tech, Computer Science',
+    institution: 'College of Engineering, Guindy',
+    period: '2018 – 2022',
   },
 ];
 
 const interests = [
   'Reinforcement Learning',
-  'Large Language Models',
-  'Agentic AI',
-  'Deep Learning',
+  'LLM Reasoning',
+  'Agentic Systems',
+  'Responsible AI',
+  'Astronomy & Astrophysics',
+];
+
+const certifications = [
+  'From the Big Bang to Dark Energy — IIST Astronomy & Astrophysics',
+  'Certification in AI/ML',
+  'Generative AI with Large Language Models',
+  'Natural Language Processing Specialization',
+];
+
+const honors = [
+  'Provisional discoverer of 4 asteroids',
+  "Second place, Hyperion '21",
+  'Best Political Party award',
 ];
 
 const currentStudy = siteConfig.currentlyExploring;
@@ -37,16 +89,13 @@ const currentStudy = siteConfig.currentlyExploring;
     <Container>
       <header class="page-header">
         <h1>About</h1>
+        <p class="text-tertiary">{location}</p>
       </header>
 
       <div class="about-body">
         <section aria-labelledby="bio-heading">
           <h2 id="bio-heading">Biography</h2>
-          <p>{siteConfig.longIntro}</p>
-          <p class="text-tertiary">
-            Replace this placeholder biography with a few real paragraphs about your background, how
-            you got into engineering, and what you care about professionally.
-          </p>
+          {bioParagraphs.map((paragraph) => <p>{paragraph}</p>)}
         </section>
 
         <section aria-labelledby="skills-heading">
@@ -72,7 +121,6 @@ const currentStudy = siteConfig.currentlyExploring;
           <ul class="tag-list-plain">
             {interests.map((interest) => <li class="badge">{interest}</li>)}
           </ul>
-          <p class="text-tertiary">Replace with the topics you're actually interested in.</p>
         </section>
 
         <section aria-labelledby="experience-heading">
@@ -90,7 +138,6 @@ const currentStudy = siteConfig.currentlyExploring;
               ))
             }
           </ul>
-          <p class="text-tertiary">Placeholder entry — replace with real work history.</p>
         </section>
 
         <section aria-labelledby="education-heading">
@@ -107,7 +154,20 @@ const currentStudy = siteConfig.currentlyExploring;
               ))
             }
           </ul>
-          <p class="text-tertiary">Placeholder entry — replace with real education history.</p>
+        </section>
+
+        <section aria-labelledby="certifications-heading">
+          <h2 id="certifications-heading">Certifications</h2>
+          <ul class="stack gap-2">
+            {certifications.map((item) => <li>{item}</li>)}
+          </ul>
+        </section>
+
+        <section aria-labelledby="honors-heading">
+          <h2 id="honors-heading">Honors</h2>
+          <ul class="stack gap-2">
+            {honors.map((item) => <li>{item}</li>)}
+          </ul>
         </section>
 
         <section aria-labelledby="study-heading">
@@ -124,6 +184,10 @@ const currentStudy = siteConfig.currentlyExploring;
 <style>
   .page-header {
     margin-bottom: var(--space-6);
+  }
+
+  .page-header p {
+    margin-top: var(--space-2);
   }
 
   .about-body {
