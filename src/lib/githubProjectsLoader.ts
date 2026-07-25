@@ -20,6 +20,12 @@ import type { Loader, LoaderContext } from 'astro/loaders';
  * GitHub repo and `completed` otherwise. Without a `Featured:` line,
  * featured defaults to false. Both are entirely repo-controlled — nothing
  * about status or featured state is set locally for these entries.
+ *
+ * The card's summary comes from the repo's GitHub "description" field
+ * (Settings → the text next to the repo name) when set. If that field is
+ * empty, it falls back to the README's first paragraph of prose instead of
+ * showing nothing — every repo's README should describe what it is, so
+ * there's almost always something usable there.
  */
 
 const APPROVAL_LINE = /^website\s*:\s*approved$/i;
@@ -108,6 +114,66 @@ function parseFeatured(readmeText: string): boolean {
   return FEATURED_LINE.test(readmeText);
 }
 
+const SUMMARY_MAX_LENGTH = 220;
+
+/** Strips inline Markdown syntax so extracted README prose reads as plain text on a card. */
+function stripInlineMarkdown(text: string): string {
+  return text
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, '') // images -> removed entirely
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // [text](url) -> text
+    .replace(/`([^`]+)`/g, '$1') // `code` -> code
+    .replace(/\*\*([^*]+)\*\*/g, '$1') // **bold** -> bold
+    .replace(/\*([^*]+)\*/g, '$1') // *italic* -> italic
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Finds the first paragraph of real prose in a README: skips the leading
+ * blank lines, the H1 title, and any badge/image/HTML rows commonly placed
+ * right under it, then collects lines until the next blank line.
+ */
+function extractDescriptionFromReadme(readmeText: string): string | null {
+  const lines = readmeText.split('\n');
+  const paragraph: string[] = [];
+  let collecting = false;
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    if (!collecting) {
+      if (!line) continue;
+      if (line.startsWith('#')) continue; // heading
+      if (line.startsWith('<')) continue; // raw HTML (e.g. centered badge/logo blocks)
+      if (/^\[!\[/.test(line)) continue; // badge: [![alt](badge-url)](link-url)
+      if (/^!\[[^\]]*\]\([^)]+\)$/.test(line)) continue; // standalone image
+      if (STATUS_LINE.test(line) || FEATURED_LINE.test(line) || APPROVAL_LINE.test(line)) continue;
+      collecting = true;
+      paragraph.push(line);
+    } else {
+      if (!line) break;
+      paragraph.push(line);
+    }
+  }
+
+  if (paragraph.length === 0) return null;
+  const text = stripInlineMarkdown(paragraph.join(' '));
+  return text.length > 0 ? text : null;
+}
+
+function truncate(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength - 1).trimEnd()}…`;
+}
+
+function resolveSummary(repoDescription: string | null, readmeText: string): string {
+  const trimmedRepoDescription = repoDescription?.trim();
+  if (trimmedRepoDescription) return trimmedRepoDescription;
+
+  const fromReadme = extractDescriptionFromReadme(readmeText);
+  return fromReadme ? truncate(fromReadme, SUMMARY_MAX_LENGTH) : 'No description provided.';
+}
+
 export function githubApprovedReposLoader(options: GithubProjectsLoaderOptions): Loader {
   const { username, token, excludeForks = true } = options;
 
@@ -150,7 +216,7 @@ export function githubApprovedReposLoader(options: GithubProjectsLoaderOptions):
           id: repo.name,
           data: {
             title: repo.name,
-            summary: repo.description ?? 'No description provided.',
+            summary: resolveSummary(repo.description, readmeText),
             publishedAt: repo.created_at,
             updatedAt: repo.pushed_at,
             tags: repo.topics ?? [],

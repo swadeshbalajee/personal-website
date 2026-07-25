@@ -105,9 +105,15 @@ values from the repo's own README — there's no local override.
   requests/hour — only needed if you have many repositories. Without it, the feature still works,
   just with a lower request budget per hour.
 
-**What's shown:** the repo name, its GitHub description, topics (as tags/technologies), and its
-`homepage` field (as a secondary "Live" link) if set. The card's title links straight to the
-GitHub repository — auto-synced projects don't get a local `/projects/<slug>` detail page.
+**What's shown:** the repo name, topics (as tags/technologies), and its `homepage` field (as a
+secondary "Live" link) if set. The card's title links straight to the GitHub repository —
+auto-synced projects don't get a local `/projects/<slug>` detail page.
+
+The card's summary text uses the repo's GitHub "description" field (the text shown next to the
+repo name — set via the repo's Settings, or `gh repo edit --description "..."`) when it's
+non-empty. If that field is blank, the loader falls back to the first paragraph of prose in the
+README instead of showing nothing — it skips the title heading and any badge/image rows first, so
+a normal README (title, badges, then a description paragraph) works without extra effort.
 
 **Failure handling:** if GitHub is unreachable, rate-limited, or the configured username doesn't
 resolve, the loader logs a warning and simply contributes zero projects for that build — it never
