@@ -1,0 +1,223 @@
+/*
+ * Design tokens. Colors are defined once per theme; everything else
+ * (components, layouts) should reference these custom properties rather
+ * than hardcoding values. To change the accent color, edit --color-accent
+ * (and --color-accent-strong / --color-accent-contrast) in both themes below.
+ *
+ * The light theme's palette (slate neutrals + blue accent) is deliberately
+ * tuned to read as one coherent system with the reference design used for
+ * article content — dark, high-contrast code blocks; a blue left-accent bar
+ * on H2s; bordered, zebra-striped tables. The dark theme reuses the same
+ * accent and structure with inverted neutrals.
+ */
+
+:root {
+  /* Typography — system font stacks only, no remote font requests. The
+     stacks lead with the closest system-available match to Inter/JetBrains
+     Mono (the reference site's fonts) so proportions feel similar without
+     any network font request. */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji';
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', 'Cascadia Code', Consolas, 'Liberation Mono', monospace;
+
+  --font-size-xs: 0.8125rem;
+  --font-size-sm: 0.9375rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1.125rem;
+  --font-size-lg: 1.375rem;
+  --font-size-xl: 1.75rem;
+  --font-size-2xl: 2.25rem;
+  --font-size-3xl: 2.75rem;
+
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.4;
+  --line-height-base: 1.6;
+  --line-height-relaxed: 1.8;
+
+  /* Spacing scale (4px base). */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.5rem;
+  --space-8: 3rem;
+  --space-9: 4rem;
+  --space-10: 5rem;
+
+  /* Layout. */
+  --content-width: 1200px;
+  --article-width: 74ch;
+  --header-height: 56px;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+
+  --transition-fast: 120ms ease;
+  --transition-base: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 10px 20px -4px rgb(0 0 0 / 0.08);
+
+  /* Code blocks are always dark (see --color-code-block-bg below), so their
+     muted text needs a fixed light-on-dark gray rather than the site's
+     theme-dependent --color-text-tertiary (which is tuned for light
+     backgrounds in light mode and would fail contrast here). */
+  --color-code-block-text-muted: #94a3b8;
+}
+
+/* Light theme (default) — slate neutrals with a blue accent. */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f8fafc;
+  --color-bg-elevated: #ffffff;
+  --color-border: #cbd5e1;
+  --color-border-strong: #94a3b8;
+
+  --color-text: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-tertiary: #64748b;
+
+  --color-accent: #2563eb;
+  --color-accent-strong: #1d4ed8;
+  --color-accent-soft: #eff6ff;
+  --color-accent-contrast: #ffffff;
+
+  --color-link: var(--color-accent);
+  --color-link-hover: var(--color-accent-strong);
+
+  --color-code-bg: #f1f5f9;
+  --color-selection-bg: #bfdbfe;
+
+  /* Code blocks are always rendered on a dark surface (see astro.config.mjs
+     Shiki theme + code.css), independent of the site's light/dark theme. */
+  --color-code-block-bg: #0f172a;
+  --color-code-block-text: #f8fafc;
+  --color-code-block-border: #1e293b;
+
+  --color-note: #2563eb;
+  --color-note-bg: #eff6ff;
+  --color-tip: #0f766e;
+  --color-tip-bg: #f0fdfa;
+  --color-info: #0f766e;
+  --color-info-bg: #f0fdfa;
+  --color-warning: #b45309;
+  --color-warning-bg: #fffbeb;
+  --color-danger: #b91c1c;
+  --color-danger-bg: #fef2f2;
+  --color-success: #047857;
+  --color-success-bg: #ecfdf5;
+  --color-question: #6d28d9;
+  --color-question-bg: #f5f3ff;
+  --color-example: #334155;
+  --color-example-bg: #f1f5f9;
+}
+
+/* Dark theme. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-bg: #0b1120;
+  --color-bg-secondary: #131b2e;
+  --color-bg-elevated: #161f35;
+  --color-border: #2c3a55;
+  --color-border-strong: #3f5175;
+
+  --color-text: #e6eaf2;
+  --color-text-secondary: #b1bad3;
+  --color-text-tertiary: #7c88a6;
+
+  --color-accent: #6d9bfa;
+  --color-accent-strong: #93b6fb;
+  --color-accent-soft: #182747;
+  --color-accent-contrast: #0b1120;
+
+  --color-link: var(--color-accent);
+  --color-link-hover: var(--color-accent-strong);
+
+  --color-code-bg: #131b2e;
+  --color-selection-bg: #24406e;
+
+  --color-code-block-bg: #0b1120;
+  --color-code-block-text: #e6eaf2;
+  --color-code-block-border: #1e293b;
+
+  --color-note: #6d9bfa;
+  --color-note-bg: #182747;
+  --color-tip: #4fd1c0;
+  --color-tip-bg: #0f2a26;
+  --color-info: #4fd1c0;
+  --color-info-bg: #0f2a26;
+  --color-warning: #eab654;
+  --color-warning-bg: #2b220f;
+  --color-danger: #f0938c;
+  --color-danger-bg: #2c1817;
+  --color-success: #7fd9a6;
+  --color-success-bg: #102a1c;
+  --color-question: #bda2f2;
+  --color-question-bg: #241c3a;
+  --color-example: #b1bad3;
+  --color-example-bg: #1b2438;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 10px 20px -4px rgb(0 0 0 / 0.5);
+}
+
+/* Fall back to dark tokens when the user has no saved preference and their
+   OS is set to dark mode. The inline theme script (see BaseLayout) sets
+   data-theme as early as possible to avoid a flash; this covers the rare
+   case where JavaScript is unavailable. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-theme='dark']) {
+    color-scheme: dark;
+
+    --color-bg: #0b1120;
+    --color-bg-secondary: #131b2e;
+    --color-bg-elevated: #161f35;
+    --color-border: #2c3a55;
+    --color-border-strong: #3f5175;
+
+    --color-text: #e6eaf2;
+    --color-text-secondary: #b1bad3;
+    --color-text-tertiary: #7c88a6;
+
+    --color-accent: #6d9bfa;
+    --color-accent-strong: #93b6fb;
+    --color-accent-soft: #182747;
+    --color-accent-contrast: #0b1120;
+
+    --color-link: var(--color-accent);
+    --color-link-hover: var(--color-accent-strong);
+
+    --color-code-bg: #131b2e;
+    --color-selection-bg: #24406e;
+
+    --color-code-block-bg: #0b1120;
+    --color-code-block-text: #e6eaf2;
+    --color-code-block-border: #1e293b;
+
+    --color-note: #6d9bfa;
+    --color-note-bg: #182747;
+    --color-tip: #4fd1c0;
+    --color-tip-bg: #0f2a26;
+    --color-info: #4fd1c0;
+    --color-info-bg: #0f2a26;
+    --color-warning: #eab654;
+    --color-warning-bg: #2b220f;
+    --color-danger: #f0938c;
+    --color-danger-bg: #2c1817;
+    --color-success: #7fd9a6;
+    --color-success-bg: #102a1c;
+    --color-question: #bda2f2;
+    --color-question-bg: #241c3a;
+    --color-example: #b1bad3;
+    --color-example-bg: #1b2438;
+  }
+}

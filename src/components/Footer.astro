@@ -1,0 +1,29 @@
+---
+import Container from './common/Container.astro';
+import Icon from './common/Icon.astro';
+import { siteConfig } from '../config/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <Container>
+    <div class="site-footer__inner">
+      <p class="text-secondary">
+        &copy; {year}
+        {siteConfig.name}. Built with <a href="https://astro.build">Astro</a>.
+      </p>
+      <ul class="site-footer__social">
+        {
+          siteConfig.social.map((link) => (
+            <li>
+              <a href={link.href} aria-label={link.label}>
+                <Icon name={link.icon} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Container>
+</footer>

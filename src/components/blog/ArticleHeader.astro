@@ -1,0 +1,83 @@
+---
+import { Image } from 'astro:assets';
+import TagList from './TagList.astro';
+import Icon from '../common/Icon.astro';
+import { formatDateLong } from '../../lib/dates';
+
+interface Props {
+  title: string;
+  description: string;
+  publishedAt: Date;
+  updatedAt?: Date;
+  readingTimeText: string;
+  tags: string[];
+  cover?: ImageMetadata;
+  coverAlt?: string;
+  draft?: boolean;
+  series?: string;
+  seriesOrder?: number;
+}
+
+const {
+  title,
+  description,
+  publishedAt,
+  updatedAt,
+  readingTimeText,
+  tags,
+  cover,
+  coverAlt,
+  draft = false,
+  series,
+  seriesOrder,
+} = Astro.props;
+---
+
+<header class="article-header">
+  {draft && <p class="badge draft-badge">Draft — hidden from production builds</p>}
+  {
+    series && (
+      <p class="eyebrow">
+        {series}
+        {seriesOrder ? ` — Part ${seriesOrder}` : ''}
+      </p>
+    )
+  }
+  <h1 class="article-header__title">{title}</h1>
+  <p class="article-header__description">{description}</p>
+
+  <div class="article-header__meta">
+    <span class="cluster gap-2">
+      <Icon name="calendar" size={16} />
+      <time datetime={publishedAt.toISOString()}>{formatDateLong(publishedAt)}</time>
+    </span>
+    {
+      updatedAt && (
+        <span class="cluster gap-2 meta-dot">
+          Updated <time datetime={updatedAt.toISOString()}>{formatDateLong(updatedAt)}</time>
+        </span>
+      )
+    }
+    <span class="cluster gap-2 meta-dot">
+      <Icon name="clock" size={16} />
+      {readingTimeText}
+    </span>
+  </div>
+
+  <TagList tags={tags} />
+
+  {
+    cover && (
+      <div class="article-cover">
+        <Image
+          src={cover}
+          alt={coverAlt ?? ''}
+          width={1200}
+          height={630}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+    )
+  }
+</header>

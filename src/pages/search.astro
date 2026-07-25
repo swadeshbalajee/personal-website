@@ -1,0 +1,51 @@
+---
+import Container from '../components/common/Container.astro';
+import Icon from '../components/common/Icon.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Search" description="Search articles and projects." path="/search">
+  <section class="section search-page">
+    <Container>
+      <header class="page-header">
+        <h1>Search</h1>
+        <p class="text-secondary">Search across all articles and projects.</p>
+      </header>
+
+      <div class="search-panel" data-search-root>
+        <div class="search-panel__header">
+          <Icon name="search" size={18} />
+          <input
+            type="search"
+            class="search-panel__input"
+            data-search-input
+            placeholder="Search articles and projects…"
+            aria-label="Search articles and projects"
+            autocomplete="off"
+          />
+        </div>
+        <p class="search-panel__status" data-search-status role="status" aria-live="polite"></p>
+        <ul class="search-results" data-search-results data-state="idle"></ul>
+      </div>
+    </Container>
+  </section>
+</BaseLayout>
+
+{
+  /*
+    No separate script import needed: BaseLayout always renders
+    SearchDialog.astro, whose script imports src/scripts/search.ts and wires
+    up every [data-search-root] on the page, including the one above.
+  */
+}
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-6);
+    max-width: 65ch;
+  }
+
+  .page-header p {
+    margin-top: var(--space-3);
+  }
+</style>

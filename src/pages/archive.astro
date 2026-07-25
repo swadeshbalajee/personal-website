@@ -1,0 +1,97 @@
+---
+import { getCollection } from 'astro:content';
+import Container from '../components/common/Container.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { filterVisible, sortByPublishedDateDesc, toArticleSummary } from '../lib/content';
+import { formatDateShort, groupByYear } from '../lib/dates';
+
+const posts = sortByPublishedDateDesc(
+  filterVisible(await getCollection('blog'), import.meta.env.PROD),
+).map(toArticleSummary);
+const byYear = groupByYear(posts, (post) => post.publishedAt);
+---
+
+<BaseLayout title="Archive" description="All articles, grouped by year." path="/archive">
+  <section class="section">
+    <Container>
+      <header class="page-header">
+        <h1>Archive</h1>
+        <p class="text-secondary">Every article, grouped by year.</p>
+      </header>
+
+      {
+        posts.length === 0 ? (
+          <p class="empty-state">No articles published yet.</p>
+        ) : (
+          [...byYear.entries()].map(([year, yearPosts]) => (
+            <section class="archive-year" aria-labelledby={`year-${year}`}>
+              <h2 id={`year-${year}`}>{year}</h2>
+              <ul class="archive-list">
+                {yearPosts.map((post) => (
+                  <li>
+                    <time datetime={post.publishedAt.toISOString()}>
+                      {formatDateShort(post.publishedAt)}
+                    </time>
+                    <a href={post.href}>{post.title}</a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))
+        )
+      }
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .page-header p {
+    margin-top: var(--space-3);
+  }
+
+  .archive-year {
+    margin-bottom: var(--space-7);
+  }
+
+  .archive-year h2 {
+    font-size: var(--font-size-lg);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-4);
+  }
+
+  .archive-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .archive-list li {
+    display: flex;
+    gap: var(--space-4);
+    align-items: baseline;
+  }
+
+  .archive-list time {
+    flex: 0 0 auto;
+    width: 6.5em;
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-sm);
+  }
+
+  .archive-list a {
+    color: var(--color-text);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .archive-list a:hover {
+    color: var(--color-accent);
+  }
+</style>

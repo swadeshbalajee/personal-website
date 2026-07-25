@@ -1,0 +1,35 @@
+---
+import Icon from './common/Icon.astro';
+---
+
+<button type="button" class="theme-toggle button button--icon button--secondary" data-theme-toggle>
+  <span class="theme-icon theme-icon--light"><Icon name="sun" /></span>
+  <span class="theme-icon theme-icon--dark"><Icon name="moon" /></span>
+  <span class="theme-icon theme-icon--system"><Icon name="system" /></span>
+  <span class="visually-hidden" data-theme-toggle-label aria-live="polite"
+    >Theme: system default</span
+  >
+</button>
+
+<style>
+  .theme-toggle {
+    position: relative;
+  }
+
+  .theme-icon {
+    display: none;
+  }
+
+  :root:not([data-theme-preference]) .theme-icon--system,
+  :root[data-theme-preference='system'] .theme-icon--system {
+    display: inline-flex;
+  }
+
+  :root[data-theme-preference='light'] .theme-icon--light {
+    display: inline-flex;
+  }
+
+  :root[data-theme-preference='dark'] .theme-icon--dark {
+    display: inline-flex;
+  }
+</style>

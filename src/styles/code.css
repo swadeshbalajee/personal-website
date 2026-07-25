@@ -1,0 +1,129 @@
+@import './tokens.css';
+
+.code-block {
+  position: relative;
+  margin: var(--space-6) 0;
+  border: 1px solid var(--color-code-block-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.code-block .astro-code {
+  margin: 0;
+  background-color: var(--color-code-block-bg) !important;
+  color: var(--color-code-block-text) !important;
+  padding: var(--space-5) var(--space-6);
+  overflow-x: auto;
+  font-size: 0.875em;
+  line-height: var(--line-height-relaxed);
+  tab-size: 2;
+  border: none;
+  border-radius: 0;
+}
+
+.code-block .astro-code code {
+  font-family: var(--font-mono);
+}
+
+.code-block .astro-code,
+.code-block .astro-code span {
+  background-color: transparent;
+}
+
+/* File-title / language label bar, rendered when the code fence includes
+   `title="..."` in its meta string (see astro.config.mjs). */
+.code-block[data-has-title='true'] .code-block__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-6);
+  border-bottom: 1px solid var(--color-code-block-border);
+  background-color: color-mix(in srgb, var(--color-code-block-bg) 92%, white 8%);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-code-block-text-muted);
+}
+
+/* Language badge, shown top-right when no title bar is present. */
+.code-block:not([data-has-title='true']) .code-block__lang {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-code-block-text-muted);
+  background-color: color-mix(in srgb, var(--color-code-block-bg) 80%, white 20%);
+  padding: 0.15em 0.55em;
+  border-radius: var(--radius-sm);
+}
+
+/* Inline code (outside fenced blocks). */
+.article-body :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  font-weight: 600;
+  background-color: var(--color-code-bg);
+  border-radius: var(--radius-sm);
+  padding: 0.15em 0.45em;
+}
+
+/* Copy button. */
+.code-copy-button {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-code-block-text);
+  background-color: color-mix(in srgb, var(--color-code-block-bg) 70%, white 30%);
+  border: 1px solid color-mix(in srgb, var(--color-code-block-text) 25%, transparent);
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  transition:
+    opacity var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.code-block[data-has-title='true'] .code-copy-button {
+  top: calc(var(--space-2) + 2.25rem);
+}
+
+.code-block:hover .code-copy-button,
+.code-block:focus-within .code-copy-button,
+.code-copy-button:focus-visible {
+  opacity: 1;
+}
+
+.code-copy-button:hover {
+  color: var(--color-accent-strong);
+  border-color: currentColor;
+}
+
+.code-copy-button[data-state='copied'] {
+  color: var(--color-success);
+  border-color: currentColor;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .code-copy-button {
+    transition: none;
+  }
+}
+
+@media (hover: none) {
+  /* Always-visible on touch devices, which have no hover state. */
+  .code-copy-button {
+    opacity: 1;
+  }
+}

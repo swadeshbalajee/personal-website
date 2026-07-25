@@ -1,0 +1,72 @@
+---
+import { siteConfig } from '../config/site';
+import { absoluteUrl, resolveTitle } from '../lib/seo';
+
+interface Props {
+  title?: string;
+  description?: string;
+  path?: string;
+  /** Overrides the computed canonical URL entirely (e.g. for cross-posted articles). */
+  canonicalUrl?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedAt?: Date;
+  updatedAt?: Date;
+  tags?: string[];
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+}
+
+const {
+  title,
+  description = siteConfig.seo.defaultDescription,
+  path = Astro.url.pathname,
+  canonicalUrl: canonicalUrlOverride,
+  image = siteConfig.seo.defaultSocialImage,
+  type = 'website',
+  publishedAt,
+  updatedAt,
+  tags = [],
+  noindex = false,
+  jsonLd = [],
+} = Astro.props;
+
+const resolvedTitle = resolveTitle(title);
+const canonicalUrl = canonicalUrlOverride ?? absoluteUrl(path);
+const imageUrl = image.startsWith('http') ? image : absoluteUrl(image);
+---
+
+<title>{resolvedTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+<meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+
+<meta property="og:title" content={resolvedTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={siteConfig.name} />
+<meta property="og:image" content={imageUrl} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={resolvedTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+
+{
+  type === 'article' && publishedAt && (
+    <meta property="article:published_time" content={publishedAt.toISOString()} />
+  )
+}
+{
+  type === 'article' && updatedAt && (
+    <meta property="article:modified_time" content={updatedAt.toISOString()} />
+  )
+}
+{type === 'article' && tags.map((tag) => <meta property="article:tag" content={tag} />)}
+
+{
+  jsonLd.map((entry) => (
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(entry)} />
+  ))
+}

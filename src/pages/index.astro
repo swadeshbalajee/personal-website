@@ -1,0 +1,217 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleCard from '../components/blog/ArticleCard.astro';
+import Container from '../components/common/Container.astro';
+import Icon from '../components/common/Icon.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../config/site';
+import { filterVisible, pickFeatured, toAnyProjectSummary, toArticleSummary } from '../lib/content';
+import { personJsonLd, websiteJsonLd } from '../lib/seo';
+import type { AnyProjectEntry } from '../lib/content';
+
+const isProd = import.meta.env.PROD;
+
+const posts = filterVisible(await getCollection('blog'), isProd);
+const projects: AnyProjectEntry[] = [
+  ...(await getCollection('projects')),
+  ...(await getCollection('githubProjects')),
+];
+
+const featuredPosts = pickFeatured(posts, siteConfig.featuredArticleCount).map(toArticleSummary);
+const featuredProjects = pickFeatured(projects, siteConfig.featuredProjectCount).map(
+  toAnyProjectSummary,
+);
+
+const jsonLd = [websiteJsonLd(), personJsonLd()];
+---
+
+<BaseLayout jsonLd={jsonLd}>
+  <section class="hero section">
+    <Container>
+      <p class="eyebrow">{siteConfig.title}</p>
+      <h1 class="hero__name">{siteConfig.name}</h1>
+      <p class="hero__intro">{siteConfig.longIntro}</p>
+      <div class="hero__actions">
+        <a class="button button--primary" href="/projects">View projects</a>
+        <a class="button button--secondary" href="/blog">Read the blog</a>
+      </div>
+    </Container>
+  </section>
+
+  {
+    featuredProjects.length > 0 && (
+      <section class="section section--tight" aria-labelledby="featured-projects-heading">
+        <Container>
+          <div class="section-heading">
+            <h2 id="featured-projects-heading">Featured projects</h2>
+            <a href="/projects">All projects</a>
+          </div>
+          <div class="card-grid">
+            {featuredProjects.map((project) => (
+              <ProjectCard
+                href={project.href}
+                title={project.title}
+                summary={project.summary}
+                status={project.status}
+                technologies={project.technologies}
+                featured={project.featured}
+                cover={project.cover}
+                coverAlt={project.coverAlt}
+                repositoryUrl={project.repositoryUrl}
+                liveUrl={project.liveUrl}
+                external={project.external}
+              />
+            ))}
+          </div>
+        </Container>
+      </section>
+    )
+  }
+
+  {
+    featuredPosts.length > 0 && (
+      <section class="section section--tight" aria-labelledby="featured-articles-heading">
+        <Container>
+          <div class="section-heading">
+            <h2 id="featured-articles-heading">Featured articles</h2>
+            <a href="/blog">All articles</a>
+          </div>
+          <div class="card-grid">
+            {featuredPosts.map((post) => (
+              <ArticleCard
+                href={post.href}
+                title={post.title}
+                description={post.description}
+                publishedAt={post.publishedAt}
+                readingTimeText={post.readingTimeText}
+                tags={post.tags}
+                featured={post.featured}
+                draft={post.draft}
+                cover={post.cover}
+                coverAlt={post.coverAlt}
+              />
+            ))}
+          </div>
+        </Container>
+      </section>
+    )
+  }
+
+  <section class="section section--tight" aria-labelledby="skills-heading">
+    <Container>
+      <h2 id="skills-heading">Technical skills</h2>
+      <div class="skills-grid">
+        {
+          siteConfig.skills.map((group) => (
+            <div>
+              <h3 class="skills-grid__category">{group.category}</h3>
+              <ul class="tag-list-plain">
+                {group.items.map((item) => (
+                  <li class="badge">{item}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </Container>
+  </section>
+
+  {
+    siteConfig.currentlyExploring.length > 0 && (
+      <section class="section section--tight" aria-labelledby="exploring-heading">
+        <Container>
+          <h2 id="exploring-heading">Currently exploring</h2>
+          <ul class="exploring-list">
+            {siteConfig.currentlyExploring.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </Container>
+      </section>
+    )
+  }
+
+  <section class="section section--tight" aria-labelledby="contact-cta-heading">
+    <Container>
+      <div class="contact-cta">
+        <div>
+          <h2 id="contact-cta-heading">Get in touch</h2>
+          <p class="text-secondary">{siteConfig.shortBio}</p>
+        </div>
+        <div class="hero__actions">
+          <a class="button button--primary" href="/contact">
+            <Icon name="mail" size={16} /> Contact
+          </a>
+          <a class="button button--secondary" href={siteConfig.social[0]?.href ?? '/contact'}>
+            <Icon name="github" size={16} /> GitHub
+          </a>
+        </div>
+      </div>
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero__name {
+    font-size: var(--font-size-3xl);
+    margin-top: var(--space-2);
+  }
+
+  .hero__intro {
+    max-width: 65ch;
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    margin-top: var(--space-4);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .skills-grid__category {
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--space-3);
+  }
+
+  .tag-list-plain {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    padding: 0;
+  }
+
+  .exploring-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: 65ch;
+    padding-inline-start: 1.2em;
+  }
+
+  .contact-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-secondary);
+  }
+</style>

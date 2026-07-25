@@ -1,0 +1,126 @@
+---
+export type IconName =
+  | 'github'
+  | 'linkedin'
+  | 'mail'
+  | 'rss'
+  | 'link'
+  | 'external'
+  | 'sun'
+  | 'moon'
+  | 'system'
+  | 'menu'
+  | 'close'
+  | 'search'
+  | 'arrow-left'
+  | 'arrow-right'
+  | 'copy'
+  | 'check'
+  | 'tag'
+  | 'calendar'
+  | 'clock'
+  | 'chevron-down';
+
+interface Props {
+  name: IconName;
+  size?: number;
+  class?: string;
+}
+
+const { name, size = 18, class: className } = Astro.props;
+---
+
+{
+  (
+    <svg
+      class={className}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {name === 'github' && (
+        <path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.4c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.6 3 5.5 3.3 5.5 3.3a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4.1 9.7c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.1-.5 2V21" />
+      )}
+      {name === 'linkedin' && (
+        <>
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M7.5 10.5v6M7.5 7.5v.01M12 16.5v-3.7c0-1.5 1-2.3 2.3-2.3 1.2 0 1.7.8 1.7 2.3v3.7" />
+        </>
+      )}
+      {name === 'mail' && (
+        <>
+          <rect x="3" y="5" width="18" height="14" rx="2" />
+          <path d="m4 7 8 6 8-6" />
+        </>
+      )}
+      {name === 'rss' && (
+        <>
+          <path d="M5 5c7.7 0 14 6.3 14 14M5 11.5c4.7 0 8.5 3.8 8.5 8.5" />
+          <circle cx="6" cy="18" r="1.5" fill="currentColor" stroke="none" />
+        </>
+      )}
+      {(name === 'link' || name === 'external') && (
+        <>
+          <path d="M10 14 20 4M14 4h6v6" />
+          <path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h6" />
+        </>
+      )}
+      {name === 'sun' && (
+        <>
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
+        </>
+      )}
+      {name === 'moon' && <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" />}
+      {name === 'system' && (
+        <>
+          <rect x="3" y="4" width="18" height="12" rx="1.5" />
+          <path d="M8 20h8M12 16v4" />
+        </>
+      )}
+      {name === 'menu' && <path d="M4 6h16M4 12h16M4 18h16" />}
+      {name === 'close' && <path d="M6 6l12 12M18 6 6 18" />}
+      {name === 'search' && (
+        <>
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </>
+      )}
+      {name === 'arrow-left' && <path d="M19 12H5m0 0 6-6m-6 6 6 6" />}
+      {name === 'arrow-right' && <path d="M5 12h14m0 0-6-6m6 6-6 6" />}
+      {name === 'copy' && (
+        <>
+          <rect x="8" y="8" width="12" height="12" rx="1.5" />
+          <path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4H5.5A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8" />
+        </>
+      )}
+      {name === 'check' && <path d="m5 13 4 4L19 7" />}
+      {name === 'tag' && (
+        <>
+          <path d="M11.5 4H6a2 2 0 0 0-2 2v5.5a2 2 0 0 0 .6 1.4l8 8a2 2 0 0 0 2.8 0l5.5-5.5a2 2 0 0 0 0-2.8l-8-8A2 2 0 0 0 11.5 4Z" />
+          <circle cx="8.5" cy="8.5" r="1.25" fill="currentColor" stroke="none" />
+        </>
+      )}
+      {name === 'calendar' && (
+        <>
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <path d="M3 10h18M8 3v4M16 3v4" />
+        </>
+      )}
+      {name === 'clock' && (
+        <>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3.5 2" />
+        </>
+      )}
+      {name === 'chevron-down' && <path d="m6 9 6 6 6-6" />}
+    </svg>
+  )
+}

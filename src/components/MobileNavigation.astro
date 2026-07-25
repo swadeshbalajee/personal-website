@@ -1,0 +1,178 @@
+---
+import Icon from './common/Icon.astro';
+import { siteConfig } from '../config/site';
+---
+
+<dialog id="mobile-navigation" class="mobile-nav" aria-label="Mobile navigation">
+  <div class="mobile-nav__header">
+    <span class="mobile-nav__title">Menu</span>
+    <button
+      type="button"
+      class="button button--icon button--secondary"
+      data-mobile-nav-close
+      aria-label="Close navigation menu"
+    >
+      <Icon name="close" />
+    </button>
+  </div>
+
+  <nav aria-label="Primary">
+    <ul class="mobile-nav__list">
+      {
+        siteConfig.nav.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <ul class="mobile-nav__social">
+    {
+      siteConfig.social.map((link) => (
+        <li>
+          <a href={link.href} aria-label={link.label}>
+            <Icon name={link.icon} />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</dialog>
+
+<style>
+  .mobile-nav {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-end: 0;
+    inset-inline-start: auto;
+    margin: 0;
+    height: 100dvh;
+    max-height: 100dvh;
+    width: min(320px, 85vw);
+    max-width: none;
+    border: none;
+    border-inline-start: 1px solid var(--color-border);
+    padding: var(--space-5);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  /* Scoped to [open] rather than set unconditionally: a plain `display: flex`
+     here would override the browser's default `dialog:not([open]) { display:
+     none }` rule and leave the panel permanently rendered (just visually
+     empty), which breaks closing it and traps it in the accessibility tree. */
+  .mobile-nav[open] {
+    display: flex;
+  }
+
+  .mobile-nav::backdrop {
+    background-color: rgb(0 0 0 / 0.45);
+  }
+
+  .mobile-nav__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mobile-nav__title {
+    font-weight: 700;
+    font-size: var(--font-size-md);
+  }
+
+  .mobile-nav__list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .mobile-nav__list a {
+    display: block;
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: var(--font-size-md);
+    font-weight: 600;
+  }
+
+  .mobile-nav__list a:hover {
+    background-color: var(--color-bg-secondary);
+  }
+
+  .mobile-nav__social {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: var(--space-3);
+    margin-top: auto;
+  }
+
+  .mobile-nav__social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    color: var(--color-text-secondary);
+  }
+
+  .mobile-nav__social a:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+</style>
+
+<script>
+  const dialog = document.getElementById('mobile-navigation') as HTMLDialogElement | null;
+  const trigger = document.querySelector<HTMLButtonElement>('[data-mobile-nav-trigger]');
+  const closeButton = dialog?.querySelector<HTMLButtonElement>('[data-mobile-nav-close]');
+
+  function openNav() {
+    if (!dialog || dialog.open) return;
+    dialog.showModal();
+    trigger?.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeNav() {
+    dialog?.close();
+  }
+
+  trigger?.addEventListener('click', openNav);
+  closeButton?.addEventListener('click', closeNav);
+
+  dialog?.addEventListener('close', () => {
+    trigger?.setAttribute('aria-expanded', 'false');
+    trigger?.focus();
+  });
+
+  // Clicking the backdrop (i.e. directly on the <dialog> element rather
+  // than its content) should close the panel, matching standard drawer UX.
+  dialog?.addEventListener('click', (event) => {
+    if (event.target === dialog) {
+      closeNav();
+    }
+  });
+
+  dialog?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', closeNav);
+  });
+
+  // Native <dialog> elements close on Escape by default, but handling it
+  // explicitly keeps behavior deterministic across browsers/versions rather
+  // than relying purely on the built-in `cancel` handling.
+  dialog?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeNav();
+    }
+  });
+</script>

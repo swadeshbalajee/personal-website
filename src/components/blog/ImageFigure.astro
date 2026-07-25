@@ -1,0 +1,19 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  caption?: string;
+  width?: number;
+  height?: number;
+  loading?: 'eager' | 'lazy';
+}
+
+const { src, alt, caption, width, height, loading = 'lazy' } = Astro.props;
+---
+
+<figure class="figure">
+  <Image src={src} alt={alt} width={width} height={height} loading={loading} decoding="async" />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

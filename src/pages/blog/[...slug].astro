@@ -1,0 +1,52 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import {
+  filterVisible,
+  getAdjacentEntries,
+  getRelatedEntries,
+  sortByPublishedDateDesc,
+  toArticleSummary,
+} from '../../lib/content';
+import { getReadingTime } from '../../lib/readingTime';
+
+export async function getStaticPaths() {
+  const posts = filterVisible(await getCollection('blog'), import.meta.env.PROD);
+  return posts.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'blog'>;
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+
+const allPosts = filterVisible(await getCollection('blog'), import.meta.env.PROD);
+const sorted = sortByPublishedDateDesc(allPosts);
+const adjacent = getAdjacentEntries(entry, sorted);
+const related = getRelatedEntries(entry, allPosts, 3).map(toArticleSummary);
+
+const readingTimeText = getReadingTime(entry.body ?? '').text;
+
+const previous = adjacent.previous
+  ? { href: `/blog/${adjacent.previous.id}`, title: adjacent.previous.data.title }
+  : undefined;
+const next = adjacent.next
+  ? { href: `/blog/${adjacent.next.id}`, title: adjacent.next.data.title }
+  : undefined;
+---
+
+<ArticleLayout
+  entry={entry}
+  headings={headings}
+  readingTimeText={readingTimeText}
+  previous={previous}
+  next={next}
+  related={related}
+>
+  <Content />
+</ArticleLayout>

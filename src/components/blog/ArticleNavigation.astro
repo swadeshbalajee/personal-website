@@ -1,0 +1,42 @@
+---
+import Icon from '../common/Icon.astro';
+
+interface NavEntry {
+  href: string;
+  title: string;
+}
+
+interface Props {
+  previous?: NavEntry;
+  next?: NavEntry;
+}
+
+const { previous, next } = Astro.props;
+---
+
+{
+  (previous || next) && (
+    <nav class="article-nav" aria-label="Article navigation">
+      {previous ? (
+        <a class="article-nav__link article-nav__link--previous" href={previous.href}>
+          <span class="text-tertiary cluster gap-1">
+            <Icon name="arrow-left" size={14} /> Previous article
+          </span>
+          <span>{previous.title}</span>
+        </a>
+      ) : (
+        <span aria-hidden="true" />
+      )}
+      {next ? (
+        <a class="article-nav__link article-nav__link--next" href={next.href}>
+          <span class="text-tertiary cluster gap-1">
+            Next article <Icon name="arrow-right" size={14} />
+          </span>
+          <span>{next.title}</span>
+        </a>
+      ) : (
+        <span aria-hidden="true" />
+      )}
+    </nav>
+  )
+}

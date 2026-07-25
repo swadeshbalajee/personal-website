@@ -1,0 +1,69 @@
+---
+import { getCollection } from 'astro:content';
+import Container from '../../components/common/Container.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { sortByPublishedDateDesc, toAnyProjectSummary } from '../../lib/content';
+import type { AnyProjectEntry } from '../../lib/content';
+
+const allEntries: AnyProjectEntry[] = [
+  ...(await getCollection('projects')),
+  ...(await getCollection('githubProjects')),
+];
+const projects = sortByPublishedDateDesc(allEntries).map(toAnyProjectSummary);
+---
+
+<BaseLayout
+  title="Projects"
+  description="Personal and experimental engineering projects."
+  path="/projects"
+>
+  <section class="section">
+    <Container>
+      <header class="page-header">
+        <h1>Projects</h1>
+        <p class="text-secondary">
+          A selection of personal and experimental projects. Status and links reflect their current
+          state — some are finished, others are in progress.
+        </p>
+      </header>
+
+      {
+        projects.length === 0 ? (
+          <p class="empty-state">
+            No projects listed yet. See docs/AUTHORING.md for the project frontmatter reference.
+          </p>
+        ) : (
+          <div class="card-grid">
+            {projects.map((project) => (
+              <ProjectCard
+                href={project.href}
+                title={project.title}
+                summary={project.summary}
+                status={project.status}
+                technologies={project.technologies}
+                featured={project.featured}
+                cover={project.cover}
+                coverAlt={project.coverAlt}
+                repositoryUrl={project.repositoryUrl}
+                liveUrl={project.liveUrl}
+                external={project.external}
+              />
+            ))}
+          </div>
+        )
+      }
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-6);
+    max-width: 65ch;
+  }
+
+  .page-header p {
+    margin-top: var(--space-3);
+  }
+</style>

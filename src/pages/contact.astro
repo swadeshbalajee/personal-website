@@ -1,0 +1,115 @@
+---
+import Container from '../components/common/Container.astro';
+import Icon from '../components/common/Icon.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../config/site';
+---
+
+<BaseLayout title="Contact" description={`How to reach ${siteConfig.name}.`} path="/contact">
+  <section class="section">
+    <Container>
+      <header class="page-header">
+        <h1>Contact</h1>
+        <p class="text-secondary">
+          The best ways to reach me are listed below. I read email regularly and it's the most
+          reliable way to get in touch.
+        </p>
+      </header>
+
+      <ul class="contact-list">
+        <li class="card contact-card">
+          <Icon name="mail" size={22} />
+          <div>
+            <p class="contact-card__label">Email</p>
+            <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
+            <p class="text-tertiary">
+              Preferred for anything detailed — project inquiries, questions about an article, or
+              feedback.
+            </p>
+          </div>
+        </li>
+
+        {
+          siteConfig.social
+            .filter((link) => link.icon === 'github' || link.icon === 'linkedin')
+            .map((link) => (
+              <li class="card contact-card">
+                <Icon name={link.icon} size={22} />
+                <div>
+                  <p class="contact-card__label">{link.label}</p>
+                  <a href={link.href} target="_blank" rel="noopener noreferrer">
+                    {link.href.replace(/^https?:\/\//, '')}
+                    <span class="visually-hidden">(opens in a new tab)</span>
+                  </a>
+                  <p class="text-tertiary">
+                    {link.icon === 'github'
+                      ? 'Source code for this site and other projects.'
+                      : 'Professional background and work history.'}
+                  </p>
+                </div>
+              </li>
+            ))
+        }
+
+        {
+          siteConfig.resumePath && (
+            <li class="card contact-card">
+              <Icon name="link" size={22} />
+              <div>
+                <p class="contact-card__label">Résumé</p>
+                <a href={siteConfig.resumePath}>Download résumé</a>
+              </div>
+            </li>
+          )
+        }
+      </ul>
+
+      <p class="text-tertiary contact-note">
+        This site intentionally has no contact form — messages sent through a form on a static site
+        would have nowhere to go without adding backend infrastructure. Email is the canonical way
+        to reach me.
+      </p>
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-6);
+    max-width: 65ch;
+  }
+
+  .page-header p {
+    margin-top: var(--space-3);
+  }
+
+  .contact-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 65ch;
+  }
+
+  .contact-card {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .contact-card__label {
+    font-weight: 650;
+    margin-bottom: var(--space-1);
+  }
+
+  .contact-card p.text-tertiary {
+    margin-top: var(--space-1);
+    font-size: var(--font-size-sm);
+  }
+
+  .contact-note {
+    max-width: 65ch;
+    margin-top: var(--space-6);
+  }
+</style>

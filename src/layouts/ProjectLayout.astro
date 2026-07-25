@@ -1,0 +1,152 @@
+---
+import 'katex/dist/katex.min.css';
+import '../styles/article.css';
+import '../styles/code.css';
+
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Icon from '../components/common/Icon.astro';
+import Container from '../components/common/Container.astro';
+import { formatDateLong } from '../lib/dates';
+import { absoluteUrl, breadcrumbsJsonLd } from '../lib/seo';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  entry: CollectionEntry<'projects'>;
+}
+
+const { entry } = Astro.props;
+const {
+  title,
+  summary,
+  publishedAt,
+  updatedAt,
+  status,
+  cover,
+  coverAlt,
+  repositoryUrl,
+  liveUrl,
+  technologies,
+} = entry.data;
+
+const STATUS_LABELS: Record<typeof status, string> = {
+  planned: 'Planned',
+  'in-progress': 'In progress',
+  completed: 'Completed',
+  archived: 'Archived',
+};
+
+const pagePath = `/projects/${entry.id}`;
+const pageUrl = absoluteUrl(pagePath);
+
+const jsonLd = [
+  breadcrumbsJsonLd([
+    { name: 'Home', url: absoluteUrl('/') },
+    { name: 'Projects', url: absoluteUrl('/projects') },
+    { name: title, url: pageUrl },
+  ]),
+];
+---
+
+<BaseLayout title={title} description={summary} path={pagePath} image={cover?.src} jsonLd={jsonLd}>
+  <article class="section">
+    <Container>
+      <header class="article-header">
+        <p class="eyebrow">Project</p>
+        <h1 class="article-header__title">{title}</h1>
+        <p class="article-header__description">{summary}</p>
+
+        <div class="article-header__meta">
+          <span class:list={['badge', `status-badge--${status}`]}>{STATUS_LABELS[status]}</span>
+          <span class="cluster gap-2 meta-dot">
+            <Icon name="calendar" size={16} />
+            <time datetime={publishedAt.toISOString()}>{formatDateLong(publishedAt)}</time>
+          </span>
+          {
+            updatedAt && (
+              <span class="cluster gap-2 meta-dot">
+                Updated <time datetime={updatedAt.toISOString()}>{formatDateLong(updatedAt)}</time>
+              </span>
+            )
+          }
+        </div>
+
+        {
+          technologies.length > 0 && (
+            <ul class="tag-list">
+              {technologies.map((tech) => (
+                <li class="badge badge--accent">{tech}</li>
+              ))}
+            </ul>
+          )
+        }
+
+        {
+          (repositoryUrl || liveUrl) && (
+            <div class="project-header__links">
+              {repositoryUrl && (
+                <a
+                  class="button button--secondary"
+                  href={repositoryUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Icon name="github" size={16} /> Repository
+                  <span class="visually-hidden">(opens in a new tab)</span>
+                </a>
+              )}
+              {liveUrl && (
+                <a
+                  class="button button--primary"
+                  href={liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Icon name="external" size={16} /> Live site
+                  <span class="visually-hidden">(opens in a new tab)</span>
+                </a>
+              )}
+            </div>
+          )
+        }
+
+        {
+          cover && (
+            <div class="article-cover">
+              <Image
+                src={cover}
+                alt={coverAlt ?? ''}
+                width={1200}
+                height={630}
+                loading="eager"
+                fetchpriority="high"
+              />
+            </div>
+          )
+        }
+      </header>
+
+      <div class="article-body">
+        <slot />
+      </div>
+    </Container>
+  </article>
+</BaseLayout>
+
+<style>
+  .project-header__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-4);
+  }
+</style>

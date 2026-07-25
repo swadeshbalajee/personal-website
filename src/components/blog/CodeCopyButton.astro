@@ -1,0 +1,21 @@
+---
+import Icon from '../common/Icon.astro';
+---
+
+{
+  /*
+    A single reusable <template> is cloned once per code block by
+    src/scripts/code-copy.ts, rather than hydrating a component per block.
+  */
+}
+<template data-code-copy-template>
+  <button type="button" class="code-copy-button" data-code-copy-button>
+    <Icon name="copy" size={14} />
+    <span data-copy-label>Copy</span>
+    <span class="visually-hidden" data-copy-status role="status"></span>
+  </button>
+</template>
+
+<script>
+  import '../../scripts/code-copy';
+</script>

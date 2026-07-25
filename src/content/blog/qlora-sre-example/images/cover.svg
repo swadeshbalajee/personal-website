@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="Abstract illustration of a small neural network with connected nodes across three layers">
+  <rect width="1200" height="630" fill="#0f1320" />
+
+  <g stroke="#2c3550" stroke-width="1.5" opacity="0.6">
+    <path d="M0 100H1200M0 530H1200" />
+  </g>
+
+  <!-- Layer 1 -->
+  <g fill="#6d97f5">
+    <circle cx="260" cy="200" r="14" />
+    <circle cx="260" cy="315" r="14" />
+    <circle cx="260" cy="430" r="14" />
+  </g>
+
+  <!-- Layer 2 -->
+  <g fill="#4fb8a4">
+    <circle cx="600" cy="150" r="14" />
+    <circle cx="600" cy="255" r="14" />
+    <circle cx="600" cy="375" r="14" />
+    <circle cx="600" cy="480" r="14" />
+  </g>
+
+  <!-- Layer 3 -->
+  <g fill="#b295e8">
+    <circle cx="940" cy="230" r="14" />
+    <circle cx="940" cy="345" r="14" />
+    <circle cx="940" cy="460" r="14" />
+  </g>
+
+  <g stroke="#3a4568" stroke-width="1.5">
+    <path d="M260 200 600 150M260 200 600 255M260 200 600 375M260 200 600 480" />
+    <path d="M260 315 600 150M260 315 600 255M260 315 600 375M260 315 600 480" />
+    <path d="M260 430 600 150M260 430 600 255M260 430 600 375M260 430 600 480" />
+    <path d="M600 150 940 230M600 150 940 345M600 150 940 460" />
+    <path d="M600 255 940 230M600 255 940 345M600 255 940 460" />
+    <path d="M600 375 940 230M600 375 940 345M600 375 940 460" />
+    <path d="M600 480 940 230M600 480 940 345M600 480 940 460" />
+  </g>
+</svg>

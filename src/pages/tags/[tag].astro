@@ -1,0 +1,80 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleCard from '../../components/blog/ArticleCard.astro';
+import Container from '../../components/common/Container.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { filterVisible, sortByPublishedDateDesc, toArticleSummary } from '../../lib/content';
+import { buildTagIndex, normalizeTag, slugifyTag } from '../../lib/tags';
+
+export async function getStaticPaths() {
+  const posts = filterVisible(await getCollection('blog'), import.meta.env.PROD);
+  const tags = buildTagIndex(posts.map((post) => post.data.tags));
+
+  return tags.map((tag) => ({
+    params: { tag: tag.slug },
+    props: { tagName: tag.name, tagSlug: tag.slug },
+  }));
+}
+
+interface Props {
+  tagName: string;
+  tagSlug: string;
+}
+
+const { tagName, tagSlug } = Astro.props;
+
+const posts = sortByPublishedDateDesc(
+  filterVisible(await getCollection('blog'), import.meta.env.PROD),
+)
+  .filter((post) =>
+    post.data.tags.some((tag) => slugifyTag(tag) === tagSlug || normalizeTag(tag) === tagSlug),
+  )
+  .map(toArticleSummary);
+---
+
+<BaseLayout
+  title={`Tag: ${tagName}`}
+  description={`Articles tagged "${tagName}".`}
+  path={`/tags/${tagSlug}`}
+>
+  <section class="section">
+    <Container>
+      <header class="page-header">
+        <p class="eyebrow"><a href="/tags">All tags</a></p>
+        <h1>{tagName}</h1>
+        <p class="text-secondary">
+          {posts.length} article{posts.length === 1 ? '' : 's'} tagged "{tagName}".
+        </p>
+      </header>
+
+      <div class="card-grid">
+        {
+          posts.map((post) => (
+            <ArticleCard
+              href={post.href}
+              title={post.title}
+              description={post.description}
+              publishedAt={post.publishedAt}
+              readingTimeText={post.readingTimeText}
+              tags={post.tags}
+              featured={post.featured}
+              draft={post.draft}
+              cover={post.cover}
+              coverAlt={post.coverAlt}
+            />
+          ))
+        }
+      </div>
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .page-header p {
+    margin-top: var(--space-2);
+  }
+</style>

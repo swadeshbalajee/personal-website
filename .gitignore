@@ -1,0 +1,35 @@
+# build output
+dist/
+.output/
+
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+*.log
+
+# environment variables
+.env
+.env.production
+
+# macOS
+.DS_Store
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# testing
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+coverage/
+
+# pagefind output (generated into dist during build)
+dist/pagefind/

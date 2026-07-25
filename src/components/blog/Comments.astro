@@ -1,0 +1,46 @@
+---
+import { siteConfig } from '../../config/site';
+
+const { comments } = siteConfig;
+const giscus = comments.enabled ? comments.giscus : null;
+---
+
+{
+  giscus && (
+    <section class="comments-section" aria-labelledby="comments-heading">
+      <h2 id="comments-heading">Comments</h2>
+      {
+        // Giscus's client.js locates its own <script> tag via
+        // document.currentScript and replaces it with an iframe in place,
+        // so the configuration is passed as data-* attributes here rather
+        // than through a separate mount element.
+      }
+      <script
+        is:inline
+        src="https://giscus.app/client.js"
+        data-repo={giscus.repo}
+        data-repo-id={giscus.repoId}
+        data-category={giscus.category}
+        data-category-id={giscus.categoryId}
+        data-mapping={giscus.mapping}
+        data-strict={giscus.strict ? '1' : '0'}
+        data-reactions-enabled={giscus.reactionsEnabled ? '1' : '0'}
+        data-emit-metadata="0"
+        data-input-position={giscus.inputPosition}
+        data-theme={giscus.theme}
+        data-lang={giscus.lang}
+        crossorigin="anonymous"
+        async
+      />
+    </section>
+  )
+}
+
+<style>
+  .comments-section {
+    margin-top: var(--space-9);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+    max-width: var(--article-width);
+  }
+</style>

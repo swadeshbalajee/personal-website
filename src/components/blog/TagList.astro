@@ -1,0 +1,32 @@
+---
+import { displayNameFor, slugifyTag } from '../../lib/tags';
+
+interface Props {
+  tags: string[];
+  class?: string;
+}
+
+const { tags, class: className } = Astro.props;
+---
+
+<ul class:list={['tag-list', className]}>
+  {
+    tags.map((tag) => (
+      <li>
+        <a class="badge" href={`/tags/${slugifyTag(tag)}`}>
+          {displayNameFor(tag)}
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    padding: 0;
+  }
+</style>

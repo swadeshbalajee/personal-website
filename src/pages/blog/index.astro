@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleCard from '../../components/blog/ArticleCard.astro';
+import Container from '../../components/common/Container.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { siteConfig } from '../../config/site';
+import { filterVisible, sortByPublishedDateDesc, toArticleSummary } from '../../lib/content';
+import { buildCategoryIndex } from '../../lib/tags';
+
+const isProd = import.meta.env.PROD;
+const posts = sortByPublishedDateDesc(filterVisible(await getCollection('blog'), isProd)).map(
+  toArticleSummary,
+);
+const categories = buildCategoryIndex(
+  siteConfig.blogCategories,
+  posts.map((post) => post.tags),
+);
+---
+
+<BaseLayout
+  title="Blog"
+  description="Technical notes and longer-form articles on reinforcement learning, large language models, and machine learning research."
+  path="/blog"
+>
+  <section class="section">
+    <Container>
+      <header class="page-header">
+        <h1>Blog</h1>
+        <p class="text-secondary">
+          Technical notes and longer-form articles on reinforcement learning, large language models,
+          and machine learning research.
+        </p>
+        <a class="button button--secondary" href="/search" data-search-trigger>Search articles</a>
+      </header>
+
+      {
+        categories.length > 0 && (
+          <ul class="tag-list-plain">
+            {categories.map((category) => (
+              <li>
+                <a class="badge" href={`/tags/${category.slug}`}>
+                  {category.name} <span class="text-tertiary">({category.count})</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      {
+        posts.length === 0 ? (
+          <p class="empty-state">
+            No articles published yet. Check back soon, or see docs/AUTHORING.md to add the first
+            one.
+          </p>
+        ) : (
+          <div class="card-grid">
+            {posts.map((post) => (
+              <ArticleCard
+                href={post.href}
+                title={post.title}
+                description={post.description}
+                publishedAt={post.publishedAt}
+                readingTimeText={post.readingTimeText}
+                tags={post.tags}
+                featured={post.featured}
+                draft={post.draft}
+                cover={post.cover}
+                coverAlt={post.coverAlt}
+              />
+            ))}
+          </div>
+        )
+      }
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-5);
+    max-width: 65ch;
+  }
+
+  .page-header p {
+    margin-top: var(--space-3);
+  }
+
+  .page-header .button {
+    margin-top: var(--space-4);
+  }
+
+  .tag-list-plain {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    padding: 0;
+    margin-bottom: var(--space-6);
+  }
+</style>

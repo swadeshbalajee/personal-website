@@ -1,0 +1,183 @@
+---
+import Container from '../components/common/Container.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../config/site';
+
+// Placeholder structure only — replace with real history before publishing.
+// Nothing here should be treated as an actual claim about the site owner.
+const experience = [
+  {
+    role: 'Graduate Researcher',
+    organization: 'DSAI Department, advised by Prof. Ravi',
+    period: 'Start — End',
+    summary: 'Researching reinforcement learning and large language models.',
+  },
+];
+
+const education = [
+  {
+    credential: 'MS in Data Science and Artificial Intelligence (DSAI)',
+    institution: 'Institution name — replace with the real one',
+    period: 'Start — End',
+  },
+];
+
+const interests = [
+  'Reinforcement Learning',
+  'Large Language Models',
+  'Agentic AI',
+  'Deep Learning',
+];
+
+const currentStudy = siteConfig.currentlyExploring;
+---
+
+<BaseLayout title="About" description={`About ${siteConfig.name}.`} path="/about">
+  <section class="section">
+    <Container>
+      <header class="page-header">
+        <h1>About</h1>
+      </header>
+
+      <div class="about-body">
+        <section aria-labelledby="bio-heading">
+          <h2 id="bio-heading">Biography</h2>
+          <p>{siteConfig.longIntro}</p>
+          <p class="text-tertiary">
+            Replace this placeholder biography with a few real paragraphs about your background, how
+            you got into engineering, and what you care about professionally.
+          </p>
+        </section>
+
+        <section aria-labelledby="skills-heading">
+          <h2 id="skills-heading">Skills</h2>
+          <div class="skills-grid">
+            {
+              siteConfig.skills.map((group) => (
+                <div>
+                  <h3 class="skills-grid__category">{group.category}</h3>
+                  <ul class="tag-list-plain">
+                    {group.items.map((item) => (
+                      <li class="badge">{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        <section aria-labelledby="interests-heading">
+          <h2 id="interests-heading">Interests</h2>
+          <ul class="tag-list-plain">
+            {interests.map((interest) => <li class="badge">{interest}</li>)}
+          </ul>
+          <p class="text-tertiary">Replace with the topics you're actually interested in.</p>
+        </section>
+
+        <section aria-labelledby="experience-heading">
+          <h2 id="experience-heading">Experience</h2>
+          <ul class="timeline">
+            {
+              experience.map((item) => (
+                <li>
+                  <p class="timeline__role">{item.role}</p>
+                  <p class="timeline__meta text-tertiary">
+                    {item.organization} · {item.period}
+                  </p>
+                  <p>{item.summary}</p>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="text-tertiary">Placeholder entry — replace with real work history.</p>
+        </section>
+
+        <section aria-labelledby="education-heading">
+          <h2 id="education-heading">Education</h2>
+          <ul class="timeline">
+            {
+              education.map((item) => (
+                <li>
+                  <p class="timeline__role">{item.credential}</p>
+                  <p class="timeline__meta text-tertiary">
+                    {item.institution} · {item.period}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="text-tertiary">Placeholder entry — replace with real education history.</p>
+        </section>
+
+        <section aria-labelledby="study-heading">
+          <h2 id="study-heading">Current areas of study</h2>
+          <ul class="stack gap-2">
+            {currentStudy.map((item) => <li>{item}</li>)}
+          </ul>
+        </section>
+      </div>
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .about-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    max-width: var(--article-width);
+  }
+
+  .about-body h2 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--space-3);
+  }
+
+  .about-body p + p {
+    margin-top: var(--space-3);
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-5);
+  }
+
+  .skills-grid__category {
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--space-2);
+  }
+
+  .tag-list-plain {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    padding: 0;
+  }
+
+  .timeline {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .timeline__role {
+    font-weight: 650;
+  }
+
+  .timeline__meta {
+    font-size: var(--font-size-sm);
+    margin-top: 0.15em;
+  }
+</style>

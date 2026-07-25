@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content';
+import Container from '../../components/common/Container.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { siteConfig } from '../../config/site';
+import { filterVisible } from '../../lib/content';
+import { buildCategoryIndex } from '../../lib/tags';
+
+const posts = filterVisible(await getCollection('blog'), import.meta.env.PROD);
+const tags = buildCategoryIndex(
+  siteConfig.blogCategories,
+  posts.map((post) => post.data.tags),
+);
+---
+
+<BaseLayout title="Tags" description="Browse articles by topic." path="/tags">
+  <section class="section">
+    <Container>
+      <header class="page-header">
+        <h1>Tags</h1>
+        <p class="text-secondary">Browse all articles grouped by topic.</p>
+      </header>
+
+      {
+        tags.length === 0 ? (
+          <p class="empty-state">No tags yet.</p>
+        ) : (
+          <ul class="tag-cloud">
+            {tags.map((tag) => (
+              <li>
+                <a class="badge badge--accent" href={`/tags/${tag.slug}`}>
+                  {tag.name} <span>({tag.count})</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .page-header p {
+    margin-top: var(--space-3);
+  }
+
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    list-style: none;
+    padding: 0;
+  }
+
+  .tag-cloud .badge {
+    font-size: var(--font-size-sm);
+    padding: 0.5em 0.9em;
+  }
+</style>

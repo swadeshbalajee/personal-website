@@ -1,0 +1,146 @@
+---
+import 'katex/dist/katex.min.css';
+import '../styles/article.css';
+import '../styles/code.css';
+
+import type { CollectionEntry } from 'astro:content';
+import ArticleCard from '../components/blog/ArticleCard.astro';
+import ArticleHeader from '../components/blog/ArticleHeader.astro';
+import ArticleNavigation from '../components/blog/ArticleNavigation.astro';
+import ArticleTableOfContents from '../components/blog/ArticleTableOfContents.astro';
+import type { TocHeading } from '../components/blog/ArticleTableOfContents.astro';
+import CodeCopyButton from '../components/blog/CodeCopyButton.astro';
+import Comments from '../components/blog/Comments.astro';
+import ReadingProgress from '../components/blog/ReadingProgress.astro';
+import Container from '../components/common/Container.astro';
+import BaseLayout from './BaseLayout.astro';
+import { absoluteUrl, blogPostingJsonLd, breadcrumbsJsonLd } from '../lib/seo';
+
+interface NavEntry {
+  href: string;
+  title: string;
+}
+
+interface RelatedEntry {
+  href: string;
+  title: string;
+  description: string;
+  publishedAt: Date;
+  readingTimeText: string;
+  tags: string[];
+}
+
+interface Props {
+  entry: CollectionEntry<'blog'>;
+  headings: TocHeading[];
+  readingTimeText: string;
+  previous?: NavEntry;
+  next?: NavEntry;
+  related: RelatedEntry[];
+}
+
+const { entry, headings, readingTimeText, previous, next, related } = Astro.props;
+const {
+  title,
+  description,
+  publishedAt,
+  updatedAt,
+  tags,
+  draft,
+  cover,
+  coverAlt,
+  canonicalUrl,
+  series,
+  seriesOrder,
+} = entry.data;
+
+const pagePath = `/blog/${entry.id}`;
+const pageUrl = absoluteUrl(pagePath);
+
+const jsonLd = [
+  blogPostingJsonLd({
+    title,
+    description,
+    publishedAt,
+    updatedAt,
+    url: pageUrl,
+    image: cover ? absoluteUrl(cover.src) : undefined,
+    tags,
+  }),
+  breadcrumbsJsonLd([
+    { name: 'Home', url: absoluteUrl('/') },
+    { name: 'Blog', url: absoluteUrl('/blog') },
+    { name: title, url: pageUrl },
+  ]),
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  path={pagePath}
+  canonicalUrl={canonicalUrl}
+  image={cover?.src}
+  type="article"
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+  tags={tags}
+  jsonLd={jsonLd}
+>
+  <ReadingProgress />
+  <article class="section">
+    <Container>
+      <ArticleHeader
+        title={title}
+        description={description}
+        publishedAt={publishedAt}
+        updatedAt={updatedAt}
+        readingTimeText={readingTimeText}
+        tags={tags}
+        cover={cover}
+        coverAlt={coverAlt}
+        draft={draft}
+        series={series}
+        seriesOrder={seriesOrder}
+      />
+
+      <div class:list={['article-layout', { 'article-layout--with-toc': headings.length > 0 }]}>
+        <div class="article-body" data-article-body>
+          <slot />
+        </div>
+        {
+          headings.length > 0 && (
+            <aside aria-label="Table of contents">
+              <ArticleTableOfContents headings={headings} />
+            </aside>
+          )
+        }
+      </div>
+
+      <ArticleNavigation previous={previous} next={next} />
+
+      {
+        related.length > 0 && (
+          <section class="related-articles" aria-labelledby="related-heading">
+            <h2 id="related-heading">Related articles</h2>
+            <div class="card-grid">
+              {related.map((item) => (
+                <ArticleCard
+                  href={item.href}
+                  title={item.title}
+                  description={item.description}
+                  publishedAt={item.publishedAt}
+                  readingTimeText={item.readingTimeText}
+                  tags={item.tags}
+                />
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <Comments />
+    </Container>
+  </article>
+  <CodeCopyButton />
+</BaseLayout>

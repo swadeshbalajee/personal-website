@@ -1,0 +1,8 @@
+# NOTE: This file uses the placeholder site URL from src/config/site.ts.
+# Update the Sitemap line below (and SITE_URL in src/config/site.ts) to your
+# real production domain before deploying. See docs/CUSTOMIZATION.md.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://example.com/sitemap-index.xml

@@ -1,0 +1,9 @@
+---
+interface Props {
+  targetId?: string;
+}
+
+const { targetId = 'main-content' } = Astro.props;
+---
+
+<a class="skip-link" href={`#${targetId}`}>Skip to main content</a>

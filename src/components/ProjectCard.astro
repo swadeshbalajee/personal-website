@@ -1,0 +1,189 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './common/Icon.astro';
+
+type ProjectStatus = 'planned' | 'in-progress' | 'completed' | 'archived';
+
+interface Props {
+  href: string;
+  title: string;
+  summary: string;
+  status: ProjectStatus;
+  technologies: string[];
+  featured?: boolean;
+  cover?: ImageMetadata;
+  coverAlt?: string;
+  repositoryUrl?: string;
+  liveUrl?: string;
+  /** True when `href` points off-site (e.g. straight to GitHub) rather than to a local project page. */
+  external?: boolean;
+}
+
+const STATUS_LABELS: Record<ProjectStatus, string> = {
+  planned: 'Planned',
+  'in-progress': 'In progress',
+  completed: 'Completed',
+  archived: 'Archived',
+};
+
+const {
+  href,
+  title,
+  summary,
+  status,
+  technologies,
+  featured = false,
+  cover,
+  coverAlt,
+  repositoryUrl,
+  liveUrl,
+  external = false,
+} = Astro.props;
+---
+
+<article class:list={['card', 'project-card', { 'project-card--featured': featured }]}>
+  {
+    cover && (
+      <div class="project-card__cover">
+        <Image src={cover} alt={coverAlt ?? ''} width={640} height={360} />
+      </div>
+    )
+  }
+  <div class="project-card__badges">
+    <span class:list={['badge', `status-badge--${status}`]}>{STATUS_LABELS[status]}</span>
+    {featured && <span class="badge badge--accent">Featured</span>}
+    {
+      external && (
+        <span class="badge">
+          <Icon name="github" size={12} /> From GitHub
+        </span>
+      )
+    }
+  </div>
+  <h3 class="project-card__title">
+    {
+      external ? (
+        <a href={href} target="_blank" rel="noopener noreferrer">
+          {title}
+          <span class="visually-hidden">(opens in a new tab)</span>
+        </a>
+      ) : (
+        <a href={href}>{title}</a>
+      )
+    }
+  </h3>
+  <p class="text-secondary">{summary}</p>
+  {
+    technologies.length > 0 && (
+      <ul class="project-card__tech">
+        {technologies.map((tech) => (
+          <li class="badge">{tech}</li>
+        ))}
+      </ul>
+    )
+  }
+  {
+    (repositoryUrl || liveUrl) && (
+      <div class="project-card__links">
+        {repositoryUrl && (
+          <a href={repositoryUrl} target="_blank" rel="noopener noreferrer">
+            <Icon name="github" size={16} /> Repository
+            <span class="visually-hidden">(opens in a new tab)</span>
+          </a>
+        )}
+        {liveUrl && (
+          <a href={liveUrl} target="_blank" rel="noopener noreferrer">
+            <Icon name="external" size={16} /> Live
+            <span class="visually-hidden">(opens in a new tab)</span>
+          </a>
+        )}
+      </div>
+    )
+  }
+</article>
+
+<style>
+  .project-card {
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .project-card__cover {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .project-card__cover :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .project-card__badges {
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-4) 0;
+  }
+
+  .project-card__title {
+    margin: var(--space-4) var(--space-4) 0;
+    font-size: var(--font-size-md);
+  }
+
+  .project-card__title a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .project-card__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .project-card__title a:hover {
+    color: var(--color-accent);
+  }
+
+  .project-card > p {
+    margin-inline: var(--space-4);
+    font-size: var(--font-size-sm);
+  }
+
+  .project-card__tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    padding: 0;
+    margin: 0 var(--space-4) var(--space-4);
+  }
+
+  .project-card__links {
+    display: flex;
+    gap: var(--space-4);
+    margin: 0 var(--space-4) var(--space-4);
+    position: relative;
+    z-index: 1;
+  }
+
+  .project-card__links a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--color-text-secondary);
+  }
+
+  .project-card__links a:hover {
+    color: var(--color-accent);
+  }
+
+  .project-card--featured {
+    border-color: var(--color-accent);
+  }
+</style>

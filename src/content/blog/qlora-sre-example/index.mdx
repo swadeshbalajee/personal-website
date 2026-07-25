@@ -1,0 +1,169 @@
+---
+title: 'Exploring QLoRA-Assisted Log Triage for SRE Workflows'
+description: 'A walkthrough of using QLoRA fine-tuning to help classify infrastructure logs, with clearly illustrative example configuration — not measured performance results.'
+publishedAt: 2026-03-18
+tags: ['Machine Learning', 'LLMs']
+draft: false
+featured: true
+cover: ./images/cover.svg
+coverAlt: 'Abstract illustration of a small neural network with connected nodes across three layers'
+---
+
+import Callout from '../../../components/mdx/Callout.astro';
+import Figure from '../../../components/mdx/Figure.astro';
+import MetricsGrid from '../../../components/mdx/MetricsGrid.astro';
+import Steps from '../../../components/mdx/Steps.astro';
+import trainingFlow from './images/training-flow.svg';
+
+<Callout type="warning" title="Illustrative only">
+  The configuration values, diagrams, and code in this article are for educational illustration.
+  They are not benchmark results, and no specific model, dataset, or production deployment is being
+  described or claimed.
+</Callout>
+
+Log triage — deciding which log lines matter, which service they belong to, and how urgent they
+are — is a repetitive classification task that shows up constantly in SRE work. This article walks
+through the general idea of using **QLoRA** (Quantized Low-Rank Adaptation) to fine-tune a small
+open model for that kind of classification, without needing the memory footprint of full
+fine-tuning.
+
+## What QLoRA changes about fine-tuning
+
+Full fine-tuning updates every parameter in a model. QLoRA instead freezes the base model's
+weights (stored in 4-bit precision to save memory) and trains a much smaller pair of low-rank
+matrices that are added alongside the frozen weights, where the adapter rank $r \ll d$ relative to
+the model's hidden dimension $d$. The training objective itself is unchanged from standard
+supervised fine-tuning — cross-entropy over the next-token predictions:
+
+$$
+\mathcal{L}(\theta)
+=
+-\sum_{i=1}^{n}\log p_\theta(y_i \mid x_i)
+$$
+
+Only the adapter parameters contribute gradients; the quantized base weights stay frozen
+throughout.
+
+## Pipeline overview
+
+<Figure
+  src={trainingFlow}
+  alt="Diagram of a QLoRA fine-tuning pipeline for log classification, from raw logs to a merged adapter used at inference time"
+  caption="A general QLoRA pipeline: label and format raw logs, fine-tune an adapter against the frozen quantized base model, then evaluate on a held-out set."
+/>
+
+### Steps to reproduce locally
+
+<Steps>
+  1. Collect a small labeled sample of log lines (service name, severity, and a normalized message
+  template work well as labels). 2. Load a base model with 4-bit quantization so it fits in limited
+  GPU memory. 3. Attach a LoRA adapter configuration to the frozen base model. 4. Fine-tune only the
+  adapter weights on the labeled sample. 5. Evaluate on a held-out slice before deciding whether to
+  merge the adapter for inference.
+</Steps>
+
+> [!TIP]
+> Start with the smallest labeled sample that lets you sanity-check the pipeline end to end.
+> It's much cheaper to catch a labeling or formatting bug on a hundred examples than after a
+> full training run.
+
+## Example configuration
+
+The snippet below shows what wiring this up tends to look like with the Hugging Face `transformers`,
+`peft`, and `bitsandbytes` libraries. Model names and paths are placeholders.
+
+```python title="train_qlora.py"
+import torch
+from peft import LoraConfig, get_peft_model
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+
+MODEL_NAME = "example/base-model"  # replace with a real base model
+
+quant_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.bfloat16,
+)
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+model = AutoModelForCausalLM.from_pretrained(
+    MODEL_NAME,
+    quantization_config=quant_config,
+    device_map="auto",
+)
+
+lora_config = LoraConfig(
+    r=16,
+    lora_alpha=32,
+    lora_dropout=0.05,
+    bias="none",
+    task_type="CAUSAL_LM",
+    target_modules=["q_proj", "v_proj"],
+)
+
+model = get_peft_model(model, lora_config)
+model.print_trainable_parameters()
+```
+
+The same configuration expressed as a plain training config file, which is often easier to diff
+and review than flags buried in a script:
+
+```json title="training-config.json"
+{
+  "base_model": "example/base-model",
+  "quantization": { "bits": 4, "type": "nf4" },
+  "lora": {
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "target_modules": ["q_proj", "v_proj"]
+  },
+  "training": { "epochs": 3, "batch_size": 8, "learning_rate": 0.0002 },
+  "notes": "Illustrative configuration only — not tied to a real training run."
+}
+```
+
+<MetricsGrid
+  note="These are illustrative configuration values for demonstration, not measured results from a real training run."
+  metrics={[
+    { label: 'LoRA rank (r)', value: '16', description: 'Example configuration value' },
+    { label: 'LoRA alpha', value: '32', description: 'Example configuration value' },
+    {
+      label: 'Base weight precision',
+      value: '4-bit (NF4)',
+      description: 'QLoRA quantization scheme',
+    },
+    {
+      label: 'Trainable parameters',
+      value: '< 1%',
+      description: 'Typical order of magnitude for adapters vs. a full model',
+    },
+  ]}
+/>
+
+## Precision trade-offs, in general
+
+Independent of any specific run, it's useful to know roughly how much memory different weight
+precisions cost per parameter:
+
+| Precision   | Approx. bytes per parameter | Typical use                                        |
+| ----------- | --------------------------- | -------------------------------------------------- |
+| FP32        | 4                           | Full-precision training                            |
+| FP16 / BF16 | 2                           | Standard mixed-precision training                  |
+| INT8        | 1                           | Post-training quantization for inference           |
+| NF4 (QLoRA) | ~0.5                        | Frozen base weights during QLoRA fine-tuning[^bnb] |
+
+Because only the small adapter matrices are trained, the optimizer state — often the largest
+memory consumer during training — only has to track a small fraction of the model's total
+parameters.[^peft]
+
+## Where this fits in an SRE workflow
+
+A fine-tuned classifier like this doesn't replace alerting or structured logging — it's better
+thought of as a triage assistant that groups and labels the log volume a human would otherwise
+have to skim manually. Treat any specific accuracy or latency figures you measure on your own logs
+as belonging to your dataset and your evaluation setup, not as a general property of QLoRA itself.
+
+[^bnb]: The `bitsandbytes` library provides the 4-bit quantization kernels QLoRA relies on.
+
+[^peft]: `peft` (Parameter-Efficient Fine-Tuning) is the library providing the LoRA adapter implementation referenced here.

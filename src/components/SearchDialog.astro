@@ -1,0 +1,84 @@
+---
+import Icon from './common/Icon.astro';
+---
+
+<dialog id="search-dialog" class="search-dialog" aria-label="Site search">
+  <div class="search-panel" data-search-root>
+    <div class="search-panel__header">
+      <Icon name="search" size={18} />
+      <input
+        type="search"
+        class="search-panel__input"
+        data-search-input
+        placeholder="Search articles and projects…"
+        aria-label="Search articles and projects"
+        autocomplete="off"
+      />
+      <button
+        type="button"
+        class="button button--icon button--secondary"
+        data-search-dialog-close
+        aria-label="Close search"
+      >
+        <Icon name="close" />
+      </button>
+    </div>
+    <p class="search-panel__status" data-search-status role="status" aria-live="polite"></p>
+    <ul class="search-results" data-search-results data-state="idle"></ul>
+    <p class="search-panel__hint text-tertiary">
+      Press <kbd>Esc</kbd> to close · <kbd>↑</kbd>/<kbd>↓</kbd> to move between results
+    </p>
+  </div>
+</dialog>
+
+<script>
+  import '../scripts/search';
+
+  const dialog = document.getElementById('search-dialog') as HTMLDialogElement | null;
+  const triggers = document.querySelectorAll<HTMLElement>('[data-search-trigger]');
+
+  function openDialog() {
+    if (!dialog || dialog.open) return;
+    dialog.showModal();
+    dialog.querySelector<HTMLInputElement>('[data-search-input]')?.focus();
+  }
+
+  function closeDialog() {
+    dialog?.close();
+  }
+
+  triggers.forEach((trigger) => {
+    trigger.addEventListener('click', (event) => {
+      event.preventDefault();
+      openDialog();
+    });
+  });
+
+  dialog?.querySelector('[data-search-dialog-close]')?.addEventListener('click', closeDialog);
+
+  dialog?.addEventListener('click', (event) => {
+    if (event.target === dialog) closeDialog();
+  });
+
+  // Native <dialog> elements close on Escape by default, but handling it
+  // explicitly keeps behavior deterministic across browsers/versions rather
+  // than relying purely on the built-in `cancel` handling.
+  dialog?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeDialog();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    const active = document.activeElement as HTMLElement | null;
+    const tag = active?.tagName.toLowerCase();
+    const isTyping = tag === 'input' || tag === 'textarea' || active?.isContentEditable;
+    const isShortcut = event.key === '/' || ((event.metaKey || event.ctrlKey) && event.key === 'k');
+
+    if (isShortcut && !isTyping) {
+      event.preventDefault();
+      openDialog();
+    }
+  });
+</script>

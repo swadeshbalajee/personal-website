@@ -1,0 +1,63 @@
+---
+
+---
+
+{
+  /*
+    Usage in MDX: write a normal ordered (numbered) Markdown list as the
+    child content — this component only restyles the resulting <ol>/<li>
+    into a connected, numbered step sequence.
+
+    <Steps>
+    1. First step.
+    2. Second step.
+    </Steps>
+  */
+}
+<div class="steps">
+  <slot />
+</div>
+
+<style>
+  .steps :global(ol) {
+    list-style: none;
+    counter-reset: step;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .steps :global(li) {
+    counter-increment: step;
+    position: relative;
+    padding-inline-start: var(--space-8);
+  }
+
+  .steps :global(li)::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent);
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+  }
+
+  .steps :global(li:not(:last-child))::after {
+    content: '';
+    position: absolute;
+    left: 0.875rem;
+    top: 1.75rem;
+    bottom: -1.25rem;
+    width: 1px;
+    background-color: var(--color-border);
+  }
+</style>

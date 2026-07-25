@@ -1,0 +1,75 @@
+---
+export interface Metric {
+  label: string;
+  value: string;
+  description?: string;
+}
+
+interface Props {
+  metrics: Metric[];
+  /** Shown above the grid to remind readers when figures are illustrative rather than measured. */
+  note?: string;
+}
+
+const { metrics, note } = Astro.props;
+---
+
+<figure class="metrics-grid-figure">
+  <div class="metrics-grid">
+    {
+      metrics.map((metric) => (
+        <div class="metrics-grid__item">
+          <p class="metrics-grid__value">{metric.value}</p>
+          <p class="metrics-grid__label">{metric.label}</p>
+          {metric.description && (
+            <p class="metrics-grid__description text-tertiary">{metric.description}</p>
+          )}
+        </div>
+      ))
+    }
+  </div>
+  {note && <figcaption class="text-tertiary">{note}</figcaption>}
+</figure>
+
+<style>
+  .metrics-grid-figure {
+    margin: 0;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .metrics-grid__item {
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-secondary);
+  }
+
+  .metrics-grid__value {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-accent);
+    line-height: 1;
+  }
+
+  .metrics-grid__label {
+    margin-top: var(--space-2);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  .metrics-grid__description {
+    margin-top: var(--space-1);
+    font-size: var(--font-size-xs);
+  }
+
+  .metrics-grid-figure figcaption {
+    margin-top: var(--space-3);
+    font-size: var(--font-size-sm);
+    text-align: left;
+  }
+</style>

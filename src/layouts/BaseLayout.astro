@@ -1,0 +1,106 @@
+---
+import '../styles/global.css';
+import '../styles/utilities.css';
+// article.css, code.css, and katex.min.css are imported by ArticleLayout and
+// ProjectLayout instead of here, since only those pages render article/code
+// content — every other page (home, blog index, tags, about, ...) skips that
+// payload entirely.
+
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import MobileNavigation from '../components/MobileNavigation.astro';
+import SearchDialog from '../components/SearchDialog.astro';
+import Seo from '../components/Seo.astro';
+import SkipLink from '../components/common/SkipLink.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  path?: string;
+  canonicalUrl?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedAt?: Date;
+  updatedAt?: Date;
+  tags?: string[];
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description,
+  path,
+  canonicalUrl,
+  image,
+  type,
+  publishedAt,
+  updatedAt,
+  tags,
+  noindex,
+  jsonLd,
+  bodyClass,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    {
+      /*
+        Sets the theme attributes before anything paints, using the same
+        localStorage key that src/scripts/theme.ts writes to. Inline and
+        minimal by design to avoid a flash of the wrong theme.
+      */
+    }
+    <script is:inline>
+      (function () {
+        try {
+          const pref = localStorage.getItem('theme') || 'system';
+          const root = document.documentElement;
+          root.dataset.themePreference = pref;
+          if (pref === 'light' || pref === 'dark') {
+            root.dataset.theme = pref;
+          }
+        } catch {
+          /* localStorage may be unavailable (e.g. private browsing); fall back to system default. */
+        }
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <Seo
+      title={title}
+      description={description}
+      path={path}
+      canonicalUrl={canonicalUrl}
+      image={image}
+      type={type}
+      publishedAt={publishedAt}
+      updatedAt={updatedAt}
+      tags={tags}
+      noindex={noindex}
+      jsonLd={jsonLd}
+    />
+  </head>
+  <body class={bodyClass}>
+    <SkipLink />
+    <Header />
+    <MobileNavigation />
+    <SearchDialog />
+    {
+      /* data-pagefind-body scopes the search index to page content, excluding
+         the header, footer, and navigation chrome rendered outside <main>. */
+    }
+    <main id="main-content" data-pagefind-body>
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import '../scripts/theme';
+    </script>
+  </body>
+</html>

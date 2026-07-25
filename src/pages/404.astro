@@ -1,0 +1,50 @@
+---
+import Container from '../components/common/Container.astro';
+import Icon from '../components/common/Icon.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found" description="This page could not be found." noindex>
+  <section class="section not-found">
+    <Container>
+      <p class="eyebrow">404</p>
+      <h1>Page not found</h1>
+      <p class="text-secondary">
+        The page you're looking for doesn't exist — it may have moved or the link may be outdated.
+      </p>
+      <div class="not-found__links">
+        <a class="button button--primary" href="/">
+          <Icon name="arrow-left" size={16} /> Home
+        </a>
+        <a class="button button--secondary" href="/blog">Blog</a>
+        <a class="button button--secondary" href="/projects">Projects</a>
+        <a class="button button--secondary" href="/search" data-search-trigger>Search</a>
+      </div>
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    text-align: center;
+    padding-block: var(--space-10);
+  }
+
+  .not-found h1 {
+    font-size: var(--font-size-3xl);
+    margin-top: var(--space-2);
+  }
+
+  .not-found p.text-secondary {
+    max-width: 50ch;
+    margin: var(--space-4) auto 0;
+  }
+
+  .not-found__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-top: var(--space-7);
+  }
+</style>

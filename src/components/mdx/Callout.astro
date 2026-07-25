@@ -1,0 +1,29 @@
+---
+export type CalloutType =
+  'note' | 'tip' | 'info' | 'warning' | 'danger' | 'success' | 'question' | 'example';
+
+interface Props {
+  type?: CalloutType;
+  title?: string;
+}
+
+const LABELS: Record<CalloutType, string> = {
+  note: 'Note',
+  tip: 'Tip',
+  info: 'Info',
+  warning: 'Warning',
+  danger: 'Danger',
+  success: 'Success',
+  question: 'Question',
+  example: 'Example',
+};
+
+const { type = 'note', title } = Astro.props;
+---
+
+<div class:list={['callout', `callout-${type}`]} data-callout={type} role="note">
+  <p class="callout-title">{title ?? LABELS[type]}</p>
+  <div class="callout-body">
+    <slot />
+  </div>
+</div>
